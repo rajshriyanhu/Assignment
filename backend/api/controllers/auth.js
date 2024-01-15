@@ -28,6 +28,7 @@ export const signin = async (req, res) => {
     const { password: pass, ...other } = validUser._doc;
     res.cookie("auth_token", token, {
       httpOnly: true,
+      sameSite: 'None',
       secure: process.env.NODE_ENV === "production",
   })
     res.status(200).json(other);
