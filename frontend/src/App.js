@@ -20,6 +20,6 @@ const App = () => {
   );
 };
 
-export const SERVER_URL = "http://localhost:7000"
+export const SERVER_URL = "https://document-xaro.onrender.com"
 
 export default App;
