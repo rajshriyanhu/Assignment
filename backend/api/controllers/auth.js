@@ -2,8 +2,9 @@ import bcrypt from "bcrypt";
 import User from "../models/user.js";
 import jwt from "jsonwebtoken";
 
-export const signup = async (req, res, next) => {
+export const signup = async (req, res) => {
   const { username, email, password } = req.body;
+  console.log(username, email, password)
   const hashedPassword = bcrypt.hashSync(password, 10);
   const newUser = new User({ username, email, password: hashedPassword });
   try {
@@ -27,7 +28,6 @@ export const signin = async (req, res) => {
     const { password: pass, ...other } = validUser._doc;
     res.cookie("auth_token", token, {
       httpOnly: true,
-      sameSite: 'None',
       secure: process.env.NODE_ENV === "production",
   })
     res.status(200).json(other);
