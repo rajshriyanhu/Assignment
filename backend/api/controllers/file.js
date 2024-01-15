@@ -2,8 +2,12 @@ import File from "../models/file.js";
 
 export const getFile = async (req, res) => {
     let file;
+    const userId = req.user.id;
     try {
         file = await File.findById(req.params.fileId)
+        if(file.userId !== userId){
+          return res.status(401).json({message: 'Unauthorized'})
+        }
         res.status(200).json(file)
     } catch (error) {
         res.status(500).json(error.message)
@@ -12,6 +16,10 @@ export const getFile = async (req, res) => {
 
 export const uploadFile = async (req, res) => {
   const newFile = new File(req.body);
+  const {userId} = req.body;
+  if(userId !== req.user.id){
+    return res.status(401).json({message: 'Unauthorized'})
+  }
   try {
     await newFile.save();
     res.status(201).json({file:newFile});
@@ -61,6 +69,9 @@ export const renameAndMoveFile = async (req, res) => {
 export const deleteFile = async(req, res) => {
     let fileId = req.params.fileId;
     const file = await File.findById(fileId)
+    if(req.user.id !== file.userId){
+      return res.status(401).json({message: 'Unauthorized'})
+    }
     if(!file){
         return res.status(404).json('No such file exists')
     }
