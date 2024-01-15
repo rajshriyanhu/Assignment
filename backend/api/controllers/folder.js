@@ -3,9 +3,10 @@ import Folder from "../models/folder.js";
 
 export const getRootFolders = async (req, res) => {
   const root = "root"
+  const userId = req.user.id;
   try {
-    const folders = await Folder.find({ parentFolderId: root });
-    const files = await File.find({ folderId: root });
+    const folders = await Folder.find({ parentFolderId: root, userId: userId });
+    const files = await File.find({ folderId: root,userId: userId  });
     console.log(files,folders)
 
     res.status(200).json({
@@ -20,11 +21,12 @@ export const getRootFolders = async (req, res) => {
 
 export const getFolder = async (req, res) => {
   const folderId = req.params.folderId;
+  const userId = req.user.id;
   try {
     // Fetching all files in the folder
-    const files = await File.find({ folderId: folderId });
+    const files = await File.find({ folderId: folderId, userId: userId  });
     // Fetching all subfolders in the folder
-    const folders = await Folder.find({ parentFolderId: folderId });
+    const folders = await Folder.find({ parentFolderId: folderId, userId: userId  });
     res.status(200).json({
       message: "Contents fetched successfully",
       files: files,
@@ -39,9 +41,10 @@ export const getFolder = async (req, res) => {
 
 export const getAllButOne = async (req, res) => {
   const excludeFolderId = req.params.folderId;
+  const userId = req.user.id;
   if(excludeFolderId === 'root'){
     try {
-      const folders = await Folder.find({})
+      const folders = await Folder.find({userId: userId })
       res.status(200).json(folders)
     } catch (error) {
       res.status(500).send({ message: 'Error retrieving folders', error: error.message });
@@ -49,7 +52,7 @@ export const getAllButOne = async (req, res) => {
   }
   else{
     try {
-      const folders = await Folder.find({ _id: { $ne: excludeFolderId } });
+      const folders = await Folder.find({ _id: { $ne: excludeFolderId }, userId: userId  });
       res.status(200).json(folders);
     } catch (error) {
       res.status(500).send({ message: 'Error retrieving folders', error: error.message });
